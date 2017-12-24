@@ -3,19 +3,25 @@ const Agenda = require('agenda');
 const app = express();
 const FitbitApiClient = require('fitbit-node');
 const redirectUriBase = 'http://localhost:3000/';
+const fitbitRedirect = redirectUriBase + 'fitbit-auth-response';
 
 
 
 var fitbitApiClient = new FitbitApiClient('22CH7N', '2312d65226b5710672fdff7ebe8d1e17');
 
 var getFitbitAuthUrl = () => {
-    return fitbitApiClient.getAuthorizeUrl('heartrate', redirectUriBase + 'fitbit-auth-response');
+    return fitbitApiClient.getAuthorizeUrl('heartrate', fitbitRedirect);
 };
 
 var getFitbitAccessToken = (authCode) => {
-    return fitbitApiClient.getAccessToken(authCode, redirectUriBase + 'fitbit-access-response');
+    return fitbitApiClient.getAccessToken(authCode, fitbitRedirect);
 };
 
+var getCurrentHeartRate = (token) => {
+    return fitbitApiClient.get('/activities/heart/date/2017-12-21/1d/1sec/time/00:00/23:59.json', token);
+    //return fitbitApiClient.get('/profile.json', token);
+
+};
 
 
 
@@ -26,13 +32,14 @@ app.get('/fitbit-auth', (req, res) => {
 });
 app.get('/fitbit-auth-response', (req, res) => {
     var authCode = req.query.code;
-    getFitbitAccessToken(authCode).then(()=>{
-        debugger;
+    var getAccessToken = getFitbitAccessToken(authCode);
+    getAccessToken.then((result) => {
+        var token = result.access_token;
+        getCurrentHeartRate(token).then((result) => {
+            res.send(result[0]['activities-heart-intraday']['dataset']);
+        });
     });
 });
-app.get('/fibit-access-response', (req, resp) => {
-    debugger;
- });
 app.listen('3000');
 
 
