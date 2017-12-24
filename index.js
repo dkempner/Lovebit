@@ -44,11 +44,7 @@ app.get('/fitbit-auth-response', (req, res) => {
     getAccessToken.then((result) => {
         UserAuth.AccessToken = result.access_token;
         UserAuth.RefreshToken = result.refresh_token;
-        res.redirect('/wowww');
-
-        // getCurrentHeartRate(currentAccessToken).then((result) => {
-        //     res.send(result[0]['activities-heart-intraday']['dataset']);
-        // });
+        res.redirect('/');
     });
 });
 app.listen('3000');
@@ -73,3 +69,6 @@ agenda.on('ready', () => {
     console.log('Agenda started...');
 });
 
+        // getCurrentHeartRate(currentAccessToken).then((result) => {
+        //     res.send(result[0]['activities-heart-intraday']['dataset']);
+        // });
