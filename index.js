@@ -7,7 +7,14 @@ const app = express();
 const redirectUriBase = 'http://localhost:3000/';
 const fitbitRedirect = redirectUriBase + 'fitbit-auth-response';
 
-var currentAccessToken = '';
+
+// Persistent Data Layer
+var UserAuth = {
+    AccessToken: '',
+    RefreshToken: ''
+};
+
+var heartRates = [];
 
 var fitbitApiClient = new FitbitApiClient('22CH7N', '2312d65226b5710672fdff7ebe8d1e17');
 
@@ -33,13 +40,15 @@ app.get('/fitbit-auth', (req, res) => {
     res.redirect(responseUrl);
 });
 app.get('/fitbit-auth-response', (req, res) => {
-    var authCode = req.query.code;
-    var getAccessToken = getFitbitAccessToken(authCode);
+    var getAccessToken = getFitbitAccessToken(req.query.code);
     getAccessToken.then((result) => {
-        currentAccessToken = result.access_token;
-        getCurrentHeartRate(currentAccessToken).then((result) => {
-            res.send(result[0]['activities-heart-intraday']['dataset']);
-        });
+        UserAuth.AccessToken = result.access_token;
+        UserAuth.RefreshToken = result.refresh_token;
+        res.redirect('/wowww');
+
+        // getCurrentHeartRate(currentAccessToken).then((result) => {
+        //     res.send(result[0]['activities-heart-intraday']['dataset']);
+        // });
     });
 });
 app.listen('3000');
@@ -50,16 +59,17 @@ var agenda = new Agenda({ db: { address: agendaConnectionString } });
 
 
 agenda.define('refresh-heartrate', (job, done) => {
-    console.log('doing it');
-    // done();
-    // getCurrentHeartRate(currentAccessToken).then(result => {
-    //     debugger;
-    //     done();
-    // });
+    if (Auth.AccessToken) {
+        getCurrentHeartRate(currentAccessToken).then(result => {
+            debugger;
+            done();
+        });
+    }
 });
 
 agenda.on('ready', () => {
-    agenda.every('2 seconds', 'refresh-heartrate');
+    agenda.every('60 seconds', 'refresh-heartrate');
     agenda.start();
+    console.log('Agenda started...');
 });
 
