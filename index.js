@@ -33,8 +33,7 @@ var getCurrentHeartRate = (token) => {
 };
 
 
-
-app.get('/', (req, res) => res.send('Hello World'));
+app.use(express.static('app/dist'));
 app.get('/fitbit-auth', (req, res) => {
     var responseUrl = getFitbitAuthUrl();
     res.redirect(responseUrl);
