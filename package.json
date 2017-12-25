@@ -10,8 +10,13 @@
   "license": "ISC",
   "dependencies": {
     "agenda": "^1.0.3",
+    "agendash": "^0.4.0",
     "express": "^4.16.2",
     "fitbit-node": "^2.0.5",
-    "moment": "^2.20.1"
+    "gulp": "^3.9.1",
+    "gulp-ng-build": "0.0.3",
+    "gulp-nodemon": "^2.2.1",
+    "moment": "^2.20.1",
+    "q": "^1.5.1"
   }
 }
