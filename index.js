@@ -39,10 +39,13 @@ app.use('/agenda', Agendash(agenda));
 
 agenda.define('refresh-heartrate', (job, done) => {
     var getHR = heartRateService.getHeartRate();
-    getHR.then(function(){
-        done();
+    getHR.done((rate) => {
+        heartRateService.handleHeartRate(rate).then(()=>{
+            debugger;
+            done();
+        });
     });
-    getHR.fail(function(){
+    getHR.catch(() => {
         done();
     });
 
@@ -53,7 +56,3 @@ agenda.on('ready', () => {
     agenda.start();
     console.log('Agenda started...');
 });
-
-        // getCurrentHeartRate(currentAccessToken).then((result) => {
-        //     res.send(result[0]['activities-heart-intraday']['dataset']);
-        // });
